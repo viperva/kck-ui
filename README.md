@@ -1,46 +1,109 @@
-# Getting Started with Create React App
+| Wydział Informatyki Politechniki Białostockiej Przedmiot:<br/>Komunikacja Człowiek - Komputer | Data realizacji: 09.01.2023                  |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Projekt 2: Tryb graficzny<br/>Adam Brzozowski                                                 | Prowadzący: dr inż. Teodora Dimitrova-Grekow |
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Generator planu lekcji (interfejs graficzny)
 
-## Available Scripts
+## Opis projektu
 
-In the project directory, you can run:
+Aplikacja ma na celu umożliwić dla użytkownika wygenerowanie presonalizwanego oraz aktualnego planu lekcji z wykorzystaniem bazy danych Degry.
 
-### `npm start`
+## Opis funkcjonalności
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Użytkownik może:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- zaktualizować swoje dane (kierunek studiów, semestr, grupy ćwiczeniowe itp.)
+- wygenerować plan (zawierający przedmioty wyłącznie podanych grup)
+- zapisać swoje ustawienia
+- wydrukować plan
+- pobrać PDF z planem
 
-### `npm test`
+## Opis realizacji zmiany warstwy prezentacji
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Logika filtrowania oraz umieszczenia lekcji w tabeli pozostała niezmienna. Główną różnicą w logice jest wykorzystanie zmiennych stanowych (ustawień użytkownika). Zmiana takiej zmiennej powoduje ponowne wywołanie funkcji filtrujących, które następnie porównywane są z obecnymi a ich róznica aktualizowana w warstwie wizualnej.<br/>
+Aplikacja graficzna istnieje w formie aplikacji webowej (strony internetowej) stworzonej z pomocą biblioteki React implementującej opisane wyżej odświeżanie jedynie różnic widoku oraz zmienne stanowe.<br/>
 
-### `npm run build`
+## Szczególnie interesujące zagadnienia projektowe
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+W momencie zakończenia konfiguracji ustawień aplikacja automatycznie przenosi widok użytkownika na wysokość tabeli z planem lekcji. Dzieje się to w następujący sposób:<br/>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```js
+event.target.name === "workshop" &&
+  window.scrollTo({
+    top: 565,
+    behavior: "smooth",
+  });
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Tworzenie plików PDF zazwyczaj sprawia dużo problemów deweloperom. Dzięki bibliotekom _jsPDF_ (https://github.com/parallax/jsPDF) oraz _html2canvas_ (https://html2canvas.hertzen.com) proces ten został znacznie usprawniony:<br/>
 
-### `npm run eject`
+```js
+const download = () => {
+  const input = table.current;
+  if (input) {
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("l", "mm", [297, 210]);
+      pdf.addImage(imgData, "JPEG", 0, 0, 297, 180);
+      pdf.save("plan-lekcji.pdf");
+    });
+  }
+};
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Zmienna _input_ przechowuje element HTML (tabelę z planem). Element ten przetwarzany jest przez bibliotekę na element HTML Canvas, który następnie zmieniany jest w obraz. Następnie tworzymy nowy dokument PDF w orientacji poziomej i umieszczamy na nim wcześniej stworzony obraz.<br/>
+Biblioteka MaterialUI (https://mui.com/) wprowadza komponent z zakładkami wykorzystany do konfiguracji ustawień. Podczas sterowania zakładkami za pomocą strzałek aktywny element podkreślany jest przyjemnym, animowanym stylowaniem.<br/>Chciałem uyskać ten efekt również podczas najeżdżania na zakładkę myszką.<br/>Po dłuższym śledztwie dowiedziałem się, że stylowanie przyznawane jest elementowi na podstawie stanu skupienia na elemencie (tzw. focus). Nadanie stanu Focus na element ręcznie (przy okazji zdażenia najechania na element myszką) spowodowało nadanie zakładce pożądanego stylowania:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```js
+<Tab
+  ref={t.ref}
+  value={isEnabled ? tabIndex : -1}
+  label={t.label}
+  disabled={!isEnabled}
+  className="tab"
+  onMouseOver={() => {
+    t.ref.current && t.ref.current.focus();
+  }}
+  onMouseLeave={() => {
+    t.ref.current && t.ref.current.blur();
+  }}
+/>
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Aplikacja napisana jest w języku Typescript będącego nadzbiorem języka Javascript.<br/> Dzięki temu projekt posiada statyczne typowanie co czyni go bardziej odpornym na nieoczekiwane błędy.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Instrukcja instalacji
 
-## Learn More
+Aby uruchomic aplikację należy w pierwszej kolejności pobrac i rozpakować powyższe repozytorium. (https://github.com/viperva/kck-ui)<br/>
+Aby umożliwić uruchomienie projektu, na komputerze powinno być zainstalowane środowisko uruchomieniowe Node.js (https://nodejs.org/en/download/)<br/>
+Należy uruchomić konsolę i wejsc do katalogu projektu.
+Następnie wykonać polecenia:<br/>
+`npm install` oraz `npm start`.<br/>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Instrukcja konfiguracji
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Zakładając poprawne wykonanie kroków poprzedniego punktu, nie przewiduje się dodatkowych kroków potrzebnych do prawidłowego działania aplikacji.
+
+## Instrukcja użytkownika
+
+Korzystanie z programu jest wybitnie proste.<br/>
+Jeżeli interfejs został wykonany poprawnie użytkownik powinen domyśleć się jak z niego korzystać.<br/>
+Na środku ekranu znajdują się zakładki zawierające rozwijane menu z listą możliwych opcji ustawień.
+Plan lekcji generuje się automatycznie.<br/>
+Istnieją również opcje zapisu, wydruku oraz pobrania planu.<br/>
+Opcje te znajdują się w rozwijanym menu w prawym górnym rogu ekranu.
+
+## Wnioski
+
+Aplikacja jest mała i prosta w obsłudze. Oferuje aktualny, estetyczny plan lekcji.<br/>
+Przewagę nad dostępnymi planami lekcji oferowanymi przez Degrę, stanowi możliwość personalizacji.<br/>
+Wymaga ona minimalnej ilości konfiguracji i jest przystępna wizualnie.
+
+## Samoocena
+
+Aplikacja z interfejsem graficznym jest dużo prostsza w użytkowaniu od poprzedniej wersji konsolowej.
+Proces zmieniania ustawień jest prosty i maksymalnie zautomatyzowany, a sam plan generuje się automatycznie.<br/>
+Aplikacja odświeża widok jedynie w miejscach wymagających odświeżenia (tj. okna planu po zmianie ustawień).<br/>
+Dodane zostały nowe funkcjonalności takie jak wydruk i pobranie planu, które generują estetyczny dokument.<br/>
+Aplikacja posiada atrakcyjny i przejrzysty interfejs. Znajdują się w niej oznaczenia oraz animacje i powiadomienia pomagające użytkownikowi rozumieć zachodzące procesy.<br/>
+Wprowadzone zostały również liczne kolorowe ikonki uproszczające zrozumienie treści oraz budujące pozytywną atmosferę.
