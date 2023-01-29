@@ -2,11 +2,13 @@
 | --------------------------------------------------------------------------------------------- | -------------------------------------------- |
 | Projekt 2: Tryb graficzny<br/>Adam Brzozowski                                                 | Prowadzący: dr inż. Teodora Dimitrova-Grekow |
 
-# Generator planu lekcji (interfejs graficzny)
+# Generator planu lekcji (responsywny interfejs graficzny)
 
 ## Opis projektu
 
-Aplikacja ma na celu umożliwić dla użytkownika wygenerowanie presonalizwanego oraz aktualnego planu lekcji z wykorzystaniem bazy danych Degry.
+Aplikacja ma na celu umożliwić dla użytkownika wygenerowanie presonalizwanego oraz aktualnego planu lekcji z wykorzystaniem bazy danych Degry.<br/>
+Aplikacja webowa powinna wyświetlać się poprawnie na urządzeniach o szerokości ekranu powyżej 350px (w dzisiejszych czasach nie spotyka się mniejszych użądzeń).<br/>
+Brak ograniczenia górnego.
 
 ## Opis funkcjonalności
 
@@ -17,60 +19,7 @@ Użytkownik może:
 - zapisać swoje ustawienia
 - wydrukować plan
 - pobrać PDF z planem
-
-## Opis realizacji zmiany warstwy prezentacji
-
-Logika filtrowania oraz umieszczenia lekcji w tabeli pozostała niezmienna. Główną różnicą w logice jest wykorzystanie zmiennych stanowych (ustawień użytkownika). Zmiana takiej zmiennej powoduje ponowne wywołanie funkcji filtrujących, które następnie porównywane są z obecnymi a ich róznica aktualizowana w warstwie wizualnej.<br/>
-Aplikacja graficzna istnieje w formie aplikacji webowej (strony internetowej) stworzonej z pomocą biblioteki React implementującej opisane wyżej odświeżanie jedynie różnic widoku oraz zmienne stanowe.<br/>
-
-## Szczególnie interesujące zagadnienia projektowe
-
-W momencie zakończenia konfiguracji ustawień aplikacja automatycznie przenosi widok użytkownika na wysokość tabeli z planem lekcji. Dzieje się to w następujący sposób:<br/>
-
-```js
-event.target.name === "workshop" &&
-  window.scrollTo({
-    top: 565,
-    behavior: "smooth",
-  });
-```
-
-Tworzenie plików PDF zazwyczaj sprawia dużo problemów deweloperom. Dzięki bibliotekom _jsPDF_ (https://github.com/parallax/jsPDF) oraz _html2canvas_ (https://html2canvas.hertzen.com) proces ten został znacznie usprawniony:<br/>
-
-```js
-const download = () => {
-  const input = table.current;
-  if (input) {
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("l", "mm", [297, 210]);
-      pdf.addImage(imgData, "JPEG", 0, 0, 297, 180);
-      pdf.save("plan-lekcji.pdf");
-    });
-  }
-};
-```
-
-Zmienna _input_ przechowuje element HTML (tabelę z planem). Element ten przetwarzany jest przez bibliotekę na element HTML Canvas, który następnie zmieniany jest w obraz. Następnie tworzymy nowy dokument PDF w orientacji poziomej i umieszczamy na nim wcześniej stworzony obraz.<br/>
-Biblioteka MaterialUI (https://mui.com/) wprowadza komponent z zakładkami wykorzystany do konfiguracji ustawień. Podczas sterowania zakładkami za pomocą strzałek aktywny element podkreślany jest przyjemnym, animowanym stylowaniem.<br/>Chciałem uyskać ten efekt również podczas najeżdżania na zakładkę myszką.<br/>Po dłuższym śledztwie dowiedziałem się, że stylowanie przyznawane jest elementowi na podstawie stanu skupienia na elemencie (tzw. focus). Nadanie stanu Focus na element ręcznie (przy okazji zdażenia najechania na element myszką) spowodowało nadanie zakładce pożądanego stylowania:
-
-```js
-<Tab
-  ref={t.ref}
-  value={isEnabled ? tabIndex : -1}
-  label={t.label}
-  disabled={!isEnabled}
-  className="tab"
-  onMouseOver={() => {
-    t.ref.current && t.ref.current.focus();
-  }}
-  onMouseLeave={() => {
-    t.ref.current && t.ref.current.blur();
-  }}
-/>
-```
-
-Aplikacja napisana jest w języku Typescript będącego nadzbiorem języka Javascript.<br/> Dzięki temu projekt posiada statyczne typowanie co czyni go bardziej odpornym na nieoczekiwane błędy.
+- design responsywny
 
 ## Instrukcja instalacji
 
@@ -97,13 +46,19 @@ Opcje te znajdują się w rozwijanym menu w prawym górnym rogu ekranu.
 
 Aplikacja jest mała i prosta w obsłudze. Oferuje aktualny, estetyczny plan lekcji.<br/>
 Przewagę nad dostępnymi planami lekcji oferowanymi przez Degrę, stanowi możliwość personalizacji.<br/>
-Wymaga ona minimalnej ilości konfiguracji i jest przystępna wizualnie.
+Wymaga ona minimalnej ilości konfiguracji i jest przystępna wizualnie.<br/>
+Poprawnie obsługuje popularne formaty urządzeń
 
 ## Samoocena
 
-Aplikacja z interfejsem graficznym jest dużo prostsza w użytkowaniu od poprzedniej wersji konsolowej.
-Proces zmieniania ustawień jest prosty i maksymalnie zautomatyzowany, a sam plan generuje się automatycznie.<br/>
-Aplikacja odświeża widok jedynie w miejscach wymagających odświeżenia (tj. okna planu po zmianie ustawień).<br/>
-Dodane zostały nowe funkcjonalności takie jak wydruk i pobranie planu, które generują estetyczny dokument.<br/>
-Aplikacja posiada atrakcyjny i przejrzysty interfejs. Znajdują się w niej oznaczenia oraz animacje i powiadomienia pomagające użytkownikowi rozumieć zachodzące procesy.<br/>
-Wprowadzone zostały również liczne kolorowe ikonki uproszczające zrozumienie treści oraz budujące pozytywną atmosferę.
+Wszystkie elementy aplikacji:
+
+- nagłówek
+- konfiguracja
+- podsumowanie
+- plan
+
+otrzymały wsparcie designu responsywnego.<br/>
+Urządzenia szerokoeranowe, mniejsze oraz urządzenia mobilne posiadają inne rozkłady intertfejsu.<br/>
+Opcja generowania pliku PDF została ulepszona nowym widokiem w celu tworzenia estetycznego pliku działającego tak samo we wszystkich formatach. Pojawiły się też nowe, lepsze powiadomienia :)<br/>
+Osobiście jestem bardzo zadowolony z projektu. Trzymanie się jednego tematu w zakresie trzech projektów pozwoliło na rozbudowanie aplikacji do wysokiego standardu. Korzystanie z niej na telefonie jest przyjemne i estetyczne tak samo jak nie bardziej niż na komputerze.

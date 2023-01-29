@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.4",
+    "@react-pdf/renderer": "^3.1.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -15,6 +16,7 @@
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
     "axios": "^1.2.2",
+    "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "luxon": "^3.2.1",
@@ -50,6 +52,12 @@
     ]
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "@types/luxon": "^3.2.0"
+  },
+  "overrides": {
+    "@react-pdf/renderer": {
+      "react": "^18.0.0"
+    }
   }
 }

@@ -13,6 +13,8 @@ import {
   InputLabel,
   Grid,
   Paper,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { degrees, groupChoice, schedules } from "./types";
 import "./styles.css";
@@ -35,7 +37,10 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
     fontSize: "1.3rem",
     padding: "10px 26px 3px 12px",
     transition: theme.transitions.create(["border-color", "box-shadow"]),
-    fontFamily: "monospace",
+    fontFamily: "Space Mono",
+    [theme.breakpoints.down("md")]: {
+      fontSize: "0.9rem",
+    },
   },
   "& .MuiSelect-icon": {
     color: "white",
@@ -51,10 +56,21 @@ const Item = styled(Paper)(({ theme }) => ({
   "& > *": {
     margin: "0",
   },
+  [theme.breakpoints.down("lg")]: {
+    width: "100%",
+
+    padding: theme.spacing(1),
+  },
+  [theme.breakpoints.down("md")]: {
+    width: "25vw",
+    fontSize: "1.2rem",
+    height: "auto",
+  },
 }));
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+  const theme = useTheme();
 
   return (
     <div
@@ -65,7 +81,15 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box
+          sx={{
+            p: 3,
+
+            [theme.breakpoints.down("md")]: {
+              px: 1,
+            },
+          }}
+        >
           <Typography component={"span"}>{children}</Typography>
         </Box>
       )}
@@ -99,31 +123,38 @@ const selects = [
 const settingsSummary = [
   {
     name: "degree",
-    label: "📚 kierunek",
+    label: `📚
+    kierunek`,
   },
   {
     name: "semester",
-    label: "📆 semestr",
+    label: `📆
+    semestr`,
   },
   {
     name: "PE",
-    label: "⚽️ grupa WF",
+    label: `⚽️
+    grupa WF`,
   },
   {
     name: "exercise",
-    label: "✏️ grupa ćwiczeniowa",
+    label: `✏️
+    grupa ćw`,
   },
   {
     name: "lab",
-    label: "🧪 grupa laboratoryjna",
+    label: `🧪
+    grupa lab`,
   },
   {
     name: "language",
-    label: "🌎 grupę językowa",
+    label: `🌎
+    język`,
   },
   {
     name: "workshop",
-    label: "🖥️ grupa PS",
+    label: `🖥️
+    grupa PS`,
   },
 ];
 
@@ -136,7 +167,7 @@ type PlanFormProps = {
 
 const Tab = styled(_Tab)({
   color: "white",
-  fontFamily: "monospace",
+  fontFamily: "Space Mono",
   fontWeight: "bold",
   fontSize: "20px",
   "& .MuiButtonBase-root .MuiTab-root .Mui-selected": {
@@ -165,6 +196,10 @@ export default function PlanForm({
   setSchedules,
   triggerSave,
 }: PlanFormProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMid = useMediaQuery(theme.breakpoints.down("lg"));
+
   const [groupChoice, setGroupChoice] = useState<groupChoice>({
     lab: [],
     exercise: [],
@@ -363,11 +398,17 @@ export default function PlanForm({
   return (
     <Box
       sx={{
-        width: "100%",
+        width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-around",
-        height: "70vh",
+        paddingY: "3rem",
+        gap: "1rem",
+        [theme.breakpoints.down("lg")]: {
+          flexDirection: "column",
+          height: "auto",
+        },
+        [theme.breakpoints.down("md")]: {},
       }}
       // stoi
     >
@@ -384,6 +425,9 @@ export default function PlanForm({
             "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
           padding: "0.3rem 1rem",
           borderRadius: "4px",
+          [theme.breakpoints.down("md")]: {
+            width: "88vw",
+          },
         }}
       >
         <Typography
@@ -391,10 +435,13 @@ export default function PlanForm({
           sx={{
             fontSize: "2.5rem",
             color: "white",
-            fontFamily: "monospace",
+            fontFamily: "Space Mono",
             textAlign: "center",
             fontWeight: "bold",
             marginY: "2rem",
+            [theme.breakpoints.down("md")]: {
+              fontSize: "1.8rem",
+            },
           }}
           component={"span"}
         >
@@ -404,8 +451,11 @@ export default function PlanForm({
           value={value}
           onChange={handleChange}
           textColor="inherit"
+          variant="scrollable"
+          scrollButtons="auto"
           TabIndicatorProps={{ style: { background: "rgb(47, 238, 245)" } }}
           aria-label="secondary tabs example"
+          sx={{ width: "100%" }}
         >
           <Tab
             ref={tab1}
@@ -455,7 +505,14 @@ export default function PlanForm({
         </Tabs>
         <TabPanel value={value} index={0}>
           <InputLabel
-            sx={{ color: "white", fontSize: "1.5rem", fontFamily: "monospace" }}
+            sx={{
+              color: "white",
+              fontSize: "1.5rem",
+              fontFamily: "Space Mono",
+              [theme.breakpoints.down("md")]: {
+                fontSize: "1.2rem",
+              },
+            }}
             id="degree"
           >
             Wybierz kierunek studiów
@@ -475,7 +532,14 @@ export default function PlanForm({
         </TabPanel>
         <TabPanel value={value} index={1}>
           <InputLabel
-            sx={{ color: "white", fontSize: "1.5rem", fontFamily: "monospace" }}
+            sx={{
+              color: "white",
+              fontSize: "1.5rem",
+              fontFamily: "Space Mono",
+              [theme.breakpoints.down("md")]: {
+                fontSize: "1.2rem",
+              },
+            }}
             id="degree"
           >
             Wybierz semestr
@@ -508,7 +572,10 @@ export default function PlanForm({
                   sx={{
                     color: "white",
                     fontSize: "1.5rem",
-                    fontFamily: "monospace",
+                    fontFamily: "Space Mono",
+                    [theme.breakpoints.down("md")]: {
+                      fontSize: "1.2rem",
+                    },
                   }}
                   id={choice.name}
                 >
@@ -538,20 +605,43 @@ export default function PlanForm({
             );
         })}
       </Box>
-      <Grid container spacing={2} sx={{ width: "36vw" }}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          width: "20vw",
+          // backgroundColor: "red",
+          [theme.breakpoints.down("lg")]: {
+            flexDirection: "row",
+            width: "95vw",
+            justifyContent: "space-around",
+          },
+          [theme.breakpoints.down("md")]: {
+            flexDirection: "row",
+            width: "100vw",
+          },
+        }}
+      >
         {settingsSummary.map((s) => {
           if (settings[s.name as keyof typeof settings])
             // splywa
             return (
-              <Grid item xs={12}>
+              <Grid item xs={isMobile ? 4 : isMid ? 2 : 12}>
                 <Item>
                   {s.name === "degree" ? (
-                    <p>
+                    <Box
+                      sx={{
+                        [theme.breakpoints.down("lg")]: {
+                          whiteSpace: "pre-line",
+                        },
+                      }}
+                    >
                       {s.label + ": "}
-                      <span
-                        style={{
+                      <Typography
+                        sx={{
                           color: "rgb(47, 238, 245)",
                           fontWeight: "bold",
+                          display: "inline",
                         }}
                       >
                         {
@@ -560,20 +650,27 @@ export default function PlanForm({
                               d.id === settings[s.name as keyof typeof settings]
                           )?.id
                         }{" "}
-                      </span>
-                    </p>
+                      </Typography>
+                    </Box>
                   ) : (
-                    <p>
+                    <Box
+                      sx={{
+                        [theme.breakpoints.down("lg")]: {
+                          whiteSpace: "pre-line",
+                        },
+                      }}
+                    >
                       {s.label + ": "}{" "}
-                      <span
-                        style={{
+                      <Typography
+                        sx={{
                           color: "rgb(47, 238, 245)",
                           fontWeight: "bold",
+                          display: "inline",
                         }}
                       >
                         {settings[s.name as keyof typeof settings]}
-                      </span>
-                    </p>
+                      </Typography>
+                    </Box>
                   )}
                 </Item>
               </Grid>
